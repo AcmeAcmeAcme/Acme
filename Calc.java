@@ -2,18 +2,36 @@ import java.util.Scanner;
 
 public class Calc {
 
+    enum Operation {
+        none,
+        plus,
+        minus,
+        delete,
+        exit,
+        mult
+    }
+
     private static Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
 
-        int number1 = number();
-        char operation = mathOperation();
-        int number2 = number();
 
-        int result = calculation(number1, number2, operation);
-        System.out.println(result);
+        while (true) {
+            int number1 = number();
+            Operation operation = mathOperation();
+
+            if (operation == Operation.exit) {
+                continue;
+            }
+
+            int number2 = number();
+
+            int result = calculation(number1, number2, operation);
+            System.out.println("Результат: " + result);
+            System.out.println("\n");
+        }
     }
-
+    
     private static int number() {
 
         System.out.println("Введите число:");
@@ -31,42 +49,67 @@ public class Calc {
         return num;
     }
 
-    private static char mathOperation() {
+    private static Operation mapperFromChar(char symbol) {
+        switch (symbol) {
+            case '+':
+                return Operation.plus;
+
+            case '-':
+                return Operation.minus;
+
+            case '*':
+                return Operation.mult;
+
+            case '/':
+                return Operation.delete;
+
+            case 'q':
+                return Operation.exit;
+
+            default:
+                return Operation.none;
+        }
+    }
+
+    private static Operation mathOperation() {
 
         System.out.println("Выбери операцию: + , - , * , /");
 
-        char operation;
-        if (scanner.hasNext()) {
-            operation = scanner.next().charAt(0);
-            if ("+/*-".contains(operation + "") == false) {
-                System.out.println("ошибка, пробуй еще раз");
-                scanner.next();
-                operation = mathOperation();
-            }
-        } else {
+        if (scanner.hasNext() == false) {
             System.out.println("ошибка, пробуй еще раз");
-            scanner.next();
-            operation = mathOperation();
+            return mathOperation();
         }
-        return operation;
+
+        char symbol = scanner.next().charAt(0);
+
+        Operation opearationVariable = mapperFromChar(symbol);
+
+        if (opearationVariable == Operation.none) {
+            System.out.println("ошибка, пробуй еще раз");
+            return mathOperation();
+        }
+
+        return opearationVariable;
     }
 
-    private static int calculation (int number1, int number2, char operation) {
+
+    private static int calculation (int number1, int number2, Operation operation) {
 
         int result;
         switch (operation) {
-            case '+':
+            case plus:
                 result = number1 + number2;
                 break;
-            case '-':
+            case minus:
                 result = number1 - number2;
                 break;
-            case '*':
+            case mult:
                 result = number1 * number2;
                 break;
-            case '/':
+            case delete:
                 result = number1 / number2;
                 break;
+            case none:
             default:
                 System.out.println("неверная операция. Попробуйте иначе");
                 result = calculation(number1, number2, mathOperation());
